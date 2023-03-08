@@ -1,0 +1,7 @@
+[deps]
+GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
+Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+NamedGraphs = "678767b0-92e7-4007-89e4-4527a8725b19"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TikzPictures = "37f6aa50-8035-52d0-81c2-5a1d08754b2d"

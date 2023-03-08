@@ -2,5 +2,5 @@ using GraphTikZ
 using Test
 
 @testset "GraphTikZ.jl" begin
-    # Write your tests here.
+  include(joinpath(pkgdir(GraphTikZ), "examples", "01_example.jl"))
 end
