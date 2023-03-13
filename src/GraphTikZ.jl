@@ -22,7 +22,6 @@ module GraphTikZ
   default_text_translation() = zero(Vec2)
 
   default_shape(v) = zero(Point2)
-  default_lines(v) = []
   default_line_color() = "black"
 
   default_line_thickness() = "ultra thick"
@@ -73,21 +72,16 @@ module GraphTikZ
     text_size=default_text_size,
     shape=default_shape,
     fill_color=default_fill_color,
-    lines=default_lines,
     edge_points=default_edge_points,
   )
-    kwargs = (; position, text, text_size, shape, fill_color, lines, edge_points)
+    kwargs = (; position, text, text_size, shape, fill_color, edge_points)
     kwargs = map(to_function, kwargs)
-    (; position, text, text_size, shape, fill_color, lines, edge_points) = kwargs
+    (; position, text, text_size, shape, fill_color, edge_points) = kwargs
     dg = DataGraph(g)
     for v in vertices(dg)
       v_data = Dict()
       v_data[:position] = position(v)
-      v_data[:shape] = []
-      for line in lines(v)
-        push!(v_data[:shape], line)
-      end
-      push!(v_data[:shape], shape(v))
+      v_data[:shape] = shape(v)
       v_data[:text] = text(v)
       v_data[:text_size] = text_size(v)
       v_data[:fill_color] = fill_color(v)

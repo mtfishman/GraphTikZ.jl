@@ -22,7 +22,7 @@ lines = [
   Vec(-1.0, 0.0),
   Vec(1.0, 0.0),
 ]
-tikz_str = tikz(NamedGraph(["j"]); lines, shape, text, fill_color="blue")
+tikz_str = tikz(NamedGraph(["j"]); shape=[lines; shape], text, fill_color="blue")
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="MPS tensor")
 
@@ -33,17 +33,17 @@ lines = [
   Vec(1.0, 0.0),
 ]
 lines[2:end] .*= √2 ./ norm.(lines[2:end])
-tikz_str = tikz(NamedGraph(["j"]); lines, shape, text, fill_color="blue")
+tikz_str = tikz(NamedGraph(["j"]); shape=[lines; shape], text, fill_color="blue")
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Tensor")
 
-tikz_str = tikz(path_g; lines=[Vec(0.0, -1.0)], fill_color="blue", text, shape)
+tikz_str = tikz(path_g; shape=[Vec(0.0, -1.0), shape], fill_color="blue", text)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="MPS")
 
 positions = spring(g)
 fill_color = (v -> rand(["blue", "yellow", "red"]))
-tikz_str = tikz(g; position=(v -> 2positions[v]), lines=[Vec(0.0, -1.0)], fill_color, text, shape)
+tikz_str = tikz(g; position=(v -> 2positions[v]), shape=[Vec(0.0, -1.0), shape], fill_color, text)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="TN")
 
@@ -82,6 +82,7 @@ function message_tensor_tikz(
   j;
   start_position=zero(Point2),
   message_tensor_text_size=GraphTikZ.default_text_size(),
+  shape=GraphTikZ.default_shape(),
 )
   lines = [
     LineString([Point(0.0, 0.0), Point(0.0, -1.0), Point(1.0, -1.0)]),
@@ -91,8 +92,7 @@ function message_tensor_tikz(
   tikz_str = tikz(;
     text=L"M_{%$(minus1(j))\rightarrow %$(j)}",
     position=start_position + Point(0.0, -1.0),
-    lines,
-    shape,
+    shape=[lines; shape],
     fill_color="red",
     text_size=message_tensor_text_size,
   )
@@ -106,8 +106,7 @@ function message_tensor_tikz(
     gg;
     position=v -> start_position + 2(Point(v) - Point(0.0, 2.0)),
     text=v -> v[2] == 2 ? L"T_{%$(j)}" : L"T^*_{%$(j)}",
-    lines=[Vec(-1.0, 0.0), Vec(1.0, 0.0)],
-    shape,
+    shape=[Vec(-1.0, 0.0), Vec(1.0, 0.0), shape],
     fill_color="blue",
   )
 
@@ -117,18 +116,17 @@ function message_tensor_tikz(
   tikz_str *= tikz(;
     text=L"M_{%$(j)\rightarrow %$(plus1(j))}",
     position=start_position + Point(6.0, -1.0),
-    lines,
-    shape,
+    shape=[lines; shape],
     fill_color="red",
     text_size=message_tensor_text_size,
   )
   return tikz_str
 end
 
-tp = TikzPicture(message_tensor_tikz(2))
+tp = TikzPicture(message_tensor_tikz(2; shape))
 push!(td, tp; caption="BP message tensor update")
 
-tp = TikzPicture(message_tensor_tikz("j"; message_tensor_text_size="\\tiny"))
+tp = TikzPicture(message_tensor_tikz("j"; shape, message_tensor_text_size="\\tiny"))
 push!(td, tp; caption="BP message tensor update")
 
 save(PDF("02_belief_propagation"), td)
