@@ -37,15 +37,54 @@ tikz_str = tikz(NamedGraph(["j"]); shape=[lines; shape], text, fill_color="blue"
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Tensor")
 
-tikz_str = tikz(path_g; shape=[Vec(0.0, -1.0), shape], fill_color="blue", text)
+tikz_str = tikz(
+  path_g;
+  shape=[Vec(0.0, -1.0), shape],
+  fill_color="blue",
+  text,
+)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="MPS")
 
+tikz_str = tikz(
+  path_g;
+  position=v -> 1.5 * GraphTikZ.default_position(v),
+  shape=[Vec(0.0, -1.0), shape],
+  fill_color="blue",
+  text,
+  edge_shape=Circle(zero(Point2), 0.4),
+  edge_fill_color="orange",
+  edge_text=e -> L"\lambda_{%$(src(e))\leftrightarrow %$(dst(e))}",
+  edge_text_size="\\small"
+)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS Vidal gauge")
+
 positions = spring(g)
 fill_color = (v -> rand(["blue", "yellow", "red"]))
-tikz_str = tikz(g; position=(v -> 2positions[v]), shape=[Vec(0.0, -1.0), shape], fill_color, text)
+tikz_str = tikz(
+  g;
+  position=(v -> 2positions[v]),
+  shape=[Vec(0.0, -1.0), shape],
+  fill_color,
+  text,
+)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="TN")
+
+tikz_str = tikz(
+  g;
+  position=(v -> 2positions[v]),
+  shape=[Vec(0.0, -1.0), shape],
+  fill_color,
+  text,
+  edge_shape=Circle(zero(Point2), 0.4),
+  edge_fill_color="orange",
+  edge_text=e -> L"\lambda_{%$(src(e))\leftrightarrow %$(dst(e))}",
+  edge_text_size="\\small"
+)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="TN Vidal gauge")
 
 path_gg = path_g ⊔ path_g
 for v in vertices(path_g)
@@ -65,11 +104,13 @@ gg = g ⊔ g
 for v in vertices(g)
   add_edge!(gg, (v, 1) => (v, 2))
 end
-position = v -> v[2] == 2 ? 2positions[v[1]] : 2positions[v[1]] - Point(0.0, 1.5)
-fill_color = function (v)
-  return v[2] == 2 ? "blue" : "red"
-end
-tikz_str = tikz(gg; position, text, fill_color, shape)
+tikz_str = tikz(
+  gg;
+  position=v -> v[2] == 2 ? 2positions[v[1]] : 2positions[v[1]] - Point(0.0, 1.5),
+  text,
+  fill_color=v -> v[2] == 2 ? "blue" : "red",
+  shape,
+)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="TN inner")
 
@@ -113,6 +154,7 @@ function message_tensor_tikz(
   tikz_str *= tikz(; text=L"=", position=start_position + Point(4.0, -1.0))
   tikz_str *= tikz(; text=L"\lambda_{%$(j)}", position=start_position + Point(5.0, -1.0))
 
+  # TODO: Pass `shape` as the first argument!
   tikz_str *= tikz(;
     text=L"M_{%$(j)\rightarrow %$(plus1(j))}",
     position=start_position + Point(6.0, -1.0),

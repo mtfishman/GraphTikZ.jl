@@ -38,7 +38,27 @@ module GraphTikZ
       dst_data = get(g, dst(e), Dict())
       src_position = get(src_data, :position, default_position(src(e)))
       dst_position = get(dst_data, :position, default_position(dst(e)))
+
+      # TODO: Allow customization.
+      # TODO: Use `Statistics.mean`.
+      position = (src_position + dst_position) / 2
+
       tikz_str *= tikz(LineString(Point2{Float64}[[src_position]; edge_points; [dst_position]]))
+      edge_shape = get(e_data, :edge_shape, default_shape())
+      edge_shapes = edge_shape isa Vector ? edge_shape : [edge_shape]
+      edge_fill_color = get(e_data, :edge_fill_color, default_fill_color())
+      edge_fill_colors = edge_fill_color isa Vector ? edge_fill_color : fill(edge_fill_color, length(edge_shapes))
+      edge_text = get(e_data, :edge_text, default_text())
+      edge_text_size = get(e_data, :edge_text_size, default_text_size())
+      edge_text_translation = get(e_data, :edge_text_translation, default_text_translation())
+      # Edge shape
+      for j in eachindex(edge_shapes)
+        edge_shape = get(edge_shapes, j, default_shape())
+        edge_fill_color = get(edge_fill_colors, j, default_fill_color())
+        tikz_str *= tikz(translate(edge_shape, position); fill_color=edge_fill_color)
+      end
+      # Edge text
+      tikz_str *= tikz(position + edge_text_translation; text=edge_text, text_size=edge_text_size)
     end
     for v in vertices(g)
       data = get(g, v, Dict())
@@ -46,7 +66,7 @@ module GraphTikZ
       shape = get(data, :shape, default_shape())
       shapes = shape isa Vector ? shape : [shape]
       fill_color = get(data, :fill_color, default_fill_color())
-      fill_colors = fill_color isa Vector ? fill_color : fill(fill_color, length(shape))
+      fill_colors = fill_color isa Vector ? fill_color : fill(fill_color, length(shapes))
       text = get(data, :text, default_text())
       text_size = get(data, :text_size, default_text_size())
       text_translation = get(data, :text_translation, default_text_translation())
@@ -72,11 +92,15 @@ module GraphTikZ
     text_size=default_text_size,
     shape=default_shape,
     fill_color=default_fill_color,
+    edge_text=default_text,
+    edge_text_size=default_text_size,
+    edge_shape=default_shape,
+    edge_fill_color=default_fill_color,
     edge_points=default_edge_points,
   )
-    kwargs = (; position, text, text_size, shape, fill_color, edge_points)
+    kwargs = (; position, text, text_size, shape, fill_color, edge_text, edge_text_size, edge_shape, edge_fill_color, edge_points)
     kwargs = map(to_function, kwargs)
-    (; position, text, text_size, shape, fill_color, edge_points) = kwargs
+    (; position, text, text_size, shape, fill_color, edge_text, edge_text_size, edge_shape, edge_fill_color, edge_points) = kwargs
     dg = DataGraph(g)
     for v in vertices(dg)
       v_data = Dict()
@@ -89,6 +113,11 @@ module GraphTikZ
     end
     for e in edges(dg)
       e_data = Dict()
+      ## e_data[:position] = edge_position(v)
+      e_data[:edge_shape] = edge_shape(e)
+      e_data[:edge_text] = edge_text(e)
+      e_data[:edge_text_size] = edge_text_size(e)
+      e_data[:edge_fill_color] = edge_fill_color(e)
       e_data[:edge_points] = edge_points(e)
       dg[e] = e_data
     end
