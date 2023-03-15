@@ -126,6 +126,13 @@ module GraphTikZ
 
   tikz(; kwargs...) = tikz(Graph(1); kwargs...)
 
+  function tikz(
+    shapes::Vector;
+    kwargs...,
+  )
+    return tikz(; shape=shapes, kwargs...)
+  end
+
   # GeometryBasics.jl extensions
   # Transformations: translation, rotation, reflection, scaling.
   # https://github.com/JuliaGeometry/Rotations.jl

@@ -12,17 +12,20 @@ n = 6
 path_g = path_graph(n)
 g = random_regular_graph(n, 3)
 
-td = TikzDocument()
-
 shape = Rect(Vec(-0.5, -0.5), Vec(1.0, 1.0))
-text = v -> L"T_{%$(v)}"
+
+td = TikzDocument()
 
 lines = [
   Vec(0.0, -1.0),
   Vec(-1.0, 0.0),
   Vec(1.0, 0.0),
 ]
-tikz_str = tikz(NamedGraph(["j"]); shape=[lines; shape], text, fill_color="blue")
+tikz_str = tikz(
+  [lines; shape];
+  text=L"T_j",
+  fill_color="blue",
+)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="MPS tensor")
 
@@ -33,7 +36,11 @@ lines = [
   Vec(1.0, 0.0),
 ]
 lines[2:end] .*= √2 ./ norm.(lines[2:end])
-tikz_str = tikz(NamedGraph(["j"]); shape=[lines; shape], text, fill_color="blue")
+tikz_str = tikz(
+  [lines; shape];
+  text=L"T_j",
+  fill_color="blue",
+)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Tensor")
 
@@ -41,7 +48,7 @@ tikz_str = tikz(
   path_g;
   shape=[Vec(0.0, -1.0), shape],
   fill_color="blue",
-  text,
+  text=v -> L"T_{%$(v)}",
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="MPS")
@@ -51,23 +58,22 @@ tikz_str = tikz(
   position=v -> 1.5 * GraphTikZ.default_position(v),
   shape=[Vec(0.0, -1.0), shape],
   fill_color="blue",
-  text,
+  text=v -> L"T_{%$(v)}",
   edge_shape=Circle(zero(Point2), 0.4),
   edge_fill_color="orange",
   edge_text=e -> L"\lambda_{%$(src(e))\leftrightarrow %$(dst(e))}",
-  edge_text_size="\\small"
+  edge_text_size="\\small",
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="MPS Vidal gauge")
 
 positions = spring(g)
-fill_color = (v -> rand(["blue", "yellow", "red"]))
 tikz_str = tikz(
   g;
   position=(v -> 2positions[v]),
   shape=[Vec(0.0, -1.0), shape],
-  fill_color,
-  text,
+  fill_color=v -> rand(["blue", "yellow", "red"]),
+  text=v -> L"T_{%$(v)}",
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="TN")
@@ -76,12 +82,12 @@ tikz_str = tikz(
   g;
   position=(v -> 2positions[v]),
   shape=[Vec(0.0, -1.0), shape],
-  fill_color,
-  text,
+  fill_color=v -> rand(["blue", "yellow", "red"]),
+  text=v -> L"T_{%$(v)}",
   edge_shape=Circle(zero(Point2), 0.4),
   edge_fill_color="orange",
   edge_text=e -> L"\lambda_{%$(src(e))\leftrightarrow %$(dst(e))}",
-  edge_text_size="\\small"
+  edge_text_size="\\small",
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="TN Vidal gauge")
@@ -90,13 +96,12 @@ path_gg = path_g ⊔ path_g
 for v in vertices(path_g)
   add_edge!(path_gg, (v, 1) => (v, 2))
 end
-text = function (v)
-  return v[2] == 2 ? L"T_{%$(v[1])}" : L"T^*_{%$(v[1])}"
-end
-fill_color = function (v)
-  return v[2] == 2 ? "blue" : "red"
-end
-tikz_str = tikz(path_gg; text, fill_color, shape)
+tikz_str = tikz(
+  path_gg;
+  text=v -> v[2] == 2 ? L"T_{%$(v[1])}" : L"T^*_{%$(v[1])}",
+  fill_color=v -> v[2] == 2 ? "blue" : "red",
+  shape,
+)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="MPS inner")
 
@@ -107,7 +112,7 @@ end
 tikz_str = tikz(
   gg;
   position=v -> v[2] == 2 ? 2positions[v[1]] : 2positions[v[1]] - Point(0.0, 1.5),
-  text,
+  text=v -> v[2] == 2 ? L"T_{%$(v[1])}" : L"T^*_{%$(v[1])}",
   fill_color=v -> v[2] == 2 ? "blue" : "red",
   shape,
 )
@@ -165,10 +170,16 @@ function message_tensor_tikz(
   return tikz_str
 end
 
-tp = TikzPicture(message_tensor_tikz(2; shape))
+tikz_str = message_tensor_tikz(2; shape)
+tp = TikzPicture(tikz_str)
 push!(td, tp; caption="BP message tensor update")
 
-tp = TikzPicture(message_tensor_tikz("j"; shape, message_tensor_text_size="\\tiny"))
+tikz_str = message_tensor_tikz(
+  "j";
+  shape,
+  message_tensor_text_size="\\tiny",
+)
+tp = TikzPicture(tikz_str)
 push!(td, tp; caption="BP message tensor update")
 
 save(PDF("02_belief_propagation"), td)
