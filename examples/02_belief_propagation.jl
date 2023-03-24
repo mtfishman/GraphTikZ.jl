@@ -14,6 +14,7 @@ path_g = path_graph(n)
 g = random_regular_graph(n, 3)
 
 shape = Rect(Vec(-0.5, -0.5), Vec(1.0, 1.0))
+shape_alt = Polygon([Point2(-0.5, -0.5), Point2(-0.5, 0.5), Point2(0.5, 0.5), Point2(0.5, -0.5)])
 
 td = TikzDocument()
 
@@ -21,7 +22,7 @@ tikz_str = tikz(; vertex=shape)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Order 0 tensor")
 
-tikz_str = tikz(; vertex=[L"T_j", shape])
+tikz_str = tikz(; vertex=[L"T_j", shape_alt])
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Order 0 tensor with label")
 
