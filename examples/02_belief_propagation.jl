@@ -6,6 +6,7 @@ using LaTeXStrings
 using LinearAlgebra
 using NamedGraphs
 using NetworkLayout
+using Statistics
 using TikzPictures
 
 n = 6
@@ -16,81 +17,162 @@ shape = Rect(Vec(-0.5, -0.5), Vec(1.0, 1.0))
 
 td = TikzDocument()
 
-lines = [
-  Vec(0.0, -1.0),
-  Vec(-1.0, 0.0),
-  Vec(1.0, 0.0),
-]
-tikz_str = tikz(
-  [lines; shape];
-  text=L"T_j",
-  fill_color="blue",
+tikz_str = tikz(; vertex=shape)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="Order 0 tensor")
+
+tikz_str = tikz(; vertex=[L"T_j", shape])
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="Order 0 tensor with label")
+
+lines = [Vec(0.0, -1.0), Vec(-1.0, 0.0), Vec(1.0, 0.0)]
+tikz_str = tikz(; vertex=[[L"T_j", shape]; lines])
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS tensor 1")
+
+tikz_str = tikz(;
+  vertex=[[L"T_j", shape]; lines],
+  vertex_kwargs=(; fill_color="blue", line_color="red", text_color="white"),
 )
 tp = TikzPicture(tikz_str)
-push!(td, tp; caption="MPS tensor")
+push!(td, tp; caption="MPS tensor 2")
 
-lines = [
-  Vec(0.0, -1.0),
-  Vec(-1.0, 1.0),
-  Vec(-1.0, -1.0),
-  Vec(1.0, 0.0),
-]
-lines[2:end] .*= √2 ./ norm.(lines[2:end])
-tikz_str = tikz(
-  [lines; shape];
-  text=L"T_j",
-  fill_color="blue",
+tikz_str = tikz(;
+  vertex=[[L"T_j", shape]; lines],
+  vertex_kwargs=[(; text_color="white"), (; fill_color="blue", line_color="brown")],
 )
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS tensor 3")
+
+lines = [Vec(0.0, -1.0), Vec(-1.0, 1.0), Vec(-1.0, -1.0), Vec(1.0, 0.0)]
+lines[2:end] .*= √2 ./ norm.(lines[2:end])
+tikz_str = tikz(; vertex=[[L"T_j", shape]; lines], vertex_kwargs=(; fill_color="blue"))
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Tensor")
 
-tikz_str = tikz(
-  path_g;
-  shape=[Vec(0.0, -1.0), shape],
-  fill_color="blue",
-  text=v -> L"T_{%$(v)}",
-)
+tikz_str = tikz(path_g; vertex=v -> [L"T_{%$(v)}", shape, Vec(0.0, -1.0)])
 tp = TikzPicture(tikz_str)
-push!(td, tp; caption="MPS")
+push!(td, tp; caption="MPS 1")
 
 tikz_str = tikz(
   path_g;
-  position=v -> 1.5 * GraphTikZ.default_position(v),
-  shape=[Vec(0.0, -1.0), shape],
-  fill_color="blue",
-  text=v -> L"T_{%$(v)}",
-  edge_shape=Circle(zero(Point2), 0.4),
-  edge_fill_color="orange",
-  edge_text=e -> L"\lambda_{%$(src(e))\leftrightarrow %$(dst(e))}",
-  edge_text_size="\\small",
+  vertex_position=v -> 2Point(v),
+  vertex=v -> [L"T_{%$(v)}", shape, Vec(0.0, -1.0)],
+  vertex_kwargs=(; fill_color="blue", line_color="red", text_color="white"),
 )
 tp = TikzPicture(tikz_str)
-push!(td, tp; caption="MPS Vidal gauge")
+push!(td, tp; caption="MPS 2")
+
+tikz_str = tikz(
+  path_g;
+  vertex_position=v -> isodd(v) ? 2Point(v, 0.0) : 2Point(v, 0.0) + Point(0.0, 1.0),
+  vertex=v -> [L"T_{%$(v)}", shape, Vec(0.0, -1.0)],
+  vertex_kwargs=(; fill_color="blue", line_color="red", text_color="white"),
+)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS 3")
+
+vertex = function (v)
+  return [
+    iseven(v) ? meta(Point(0.0, 1.0); text=L"T_{%$(v)}") : L"T_{%$(v)}",
+    shape,
+    isodd(v) ? Vec(0.0, -1.0) : 2Vec(0.0, -1.0),
+  ]
+end
+vertex_kwargs = function (v)
+  return [
+    (; text_color=isodd(v) ? "yellow" : "black"),
+    (; fill_color="blue", line_color=isodd(v) ? "red" : "orange"),
+    (; line_color=isodd(v) ? "black" : "blue"),
+  ]
+end
+tikz_str = tikz(path_g; vertex, vertex_kwargs)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS 4")
+
+tikz_str = tikz(path_g; vertex, vertex_kwargs)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS 5")
+
+text = function (e)
+  return function (p1, p2)
+    return meta(
+      Point(mean((p1, p2)) + Point(0.0, 0.5));
+      text=L"e_{%$(src(e))\leftrightarrow %$(dst(e))}",
+    )
+  end
+end
+edge = function (e)
+  return [text(e), Line]
+end
+tikz_str = tikz(path_g; vertex=v -> [L"T_{%$(v)}", shape, Vec(0.0, -1.0)], edge)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS 6")
+
+tikz_str = tikz(
+  path_g;
+  vertex=v -> [L"T_{%$(v)}", shape, Vec(0.0, -1.0)],
+  edge=e -> (p1, p2) -> LineString([p1, mean((p1, p2)) + Point(0.0, 1.0), p2]),
+)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS 7")
+
+tikz_str = tikz(
+  path_g;
+  vertex_position=v -> 3Point(v, 0.0),
+  vertex=v -> [L"T_{%$(v)}", shape, Vec(0.0, -1.0)],
+  edge=Circle(zero(Point2), 0.3),
+)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS 8")
+
+vertex = function (v)
+  return [L"T_{%$(v)}", shape, Vec(0.0, -1.0)]
+end
+vertex_kwargs = function (v)
+  return [
+    (; text_color="white"),
+    (; fill_color="blue", line_color="purple"),
+    (; line_color="gray"),
+  ]
+end
+edge = function (e)
+  return [L"\lambda_{%$(src(e))\leftrightarrow %$(dst(e))}", Circle(zero(Point2), 0.4), Line]
+end
+edge_kwargs = function (e)
+  return [
+    (; text_size="\\tiny"),
+    (; fill_color="blue", line_color="green"),
+    (; line_color="orange"),
+  ]
+end
+tikz_str = tikz(
+  path_g; vertex_position=v -> 3Point(v, 0.0), vertex, vertex_kwargs, edge, edge_kwargs
+)
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="MPS 9")
 
 positions = spring(g)
 tikz_str = tikz(
   g;
-  position=(v -> 2positions[v]),
-  shape=[Vec(0.0, -1.0), shape],
-  fill_color=v -> rand(["blue", "yellow", "red"]),
-  text=v -> L"T_{%$(v)}",
+  vertex_position=(v -> 2positions[v]),
+  vertex=v -> [L"T_{%$(v)}", shape, Vec(0.0, -1.0)],
+  vertex_kwargs=v -> (; fill_color=rand(["blue", "yellow", "red"])),
 )
 tp = TikzPicture(tikz_str)
-push!(td, tp; caption="TN")
+push!(td, tp; caption="TN 1")
 
 tikz_str = tikz(
   g;
-  position=(v -> 2positions[v]),
-  shape=[Vec(0.0, -1.0), shape],
-  fill_color=v -> rand(["blue", "yellow", "red"]),
-  text=v -> L"T_{%$(v)}",
-  edge_shape=Circle(zero(Point2), 0.4),
-  edge_fill_color="orange",
-  edge_text=e -> L"\lambda_{%$(src(e))\leftrightarrow %$(dst(e))}",
-  edge_text_size="\\small",
+  vertex_position=(v -> 2positions[v]),
+  vertex=v -> [L"T_{%$(v)}", shape, Vec(0.0, -1.0)],
+  vertex_kwargs=v -> (; fill_color=rand(["blue", "yellow", "red"])),
+  edge=e ->
+    [L"\lambda_{%$(src(e))\leftrightarrow %$(dst(e))}", Circle(zero(Point2), 0.4), Line],
+  edge_kwargs=[(; text_size="\\small"), (; fill_color="orange")],
 )
 tp = TikzPicture(tikz_str)
-push!(td, tp; caption="TN Vidal gauge")
+push!(td, tp; caption="TN 2")
 
 path_gg = path_g ⊔ path_g
 for v in vertices(path_g)
@@ -98,9 +180,8 @@ for v in vertices(path_g)
 end
 tikz_str = tikz(
   path_gg;
-  text=v -> v[2] == 2 ? L"T_{%$(v[1])}" : L"T^*_{%$(v[1])}",
-  fill_color=v -> v[2] == 2 ? "blue" : "red",
-  shape,
+  vertex=v -> [iseven(v[2]) ? L"T_{%$(v[1])}" : L"T^*_{%$(v[1])}", shape],
+  vertex_kwargs=v -> (; fill_color=iseven(v[2]) ? "blue" : "red"),
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="MPS inner")
@@ -111,10 +192,9 @@ for v in vertices(g)
 end
 tikz_str = tikz(
   gg;
-  position=v -> v[2] == 2 ? 2positions[v[1]] : 2positions[v[1]] - Point(0.0, 1.5),
-  text=v -> v[2] == 2 ? L"T_{%$(v[1])}" : L"T^*_{%$(v[1])}",
-  fill_color=v -> v[2] == 2 ? "blue" : "red",
-  shape,
+  vertex_position=v -> iseven(v[2]) ? 2positions[v[1]] : 2positions[v[1]] - Point(0.0, 1.5),
+  vertex=v -> [iseven(v[2]) ? L"T_{%$(v[1])}" : L"T^*_{%$(v[1])}", shape],
+  vertex_kwargs=v -> (; fill_color=iseven(v[2]) ? "blue" : "red"),
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="TN inner")
@@ -136,11 +216,9 @@ function message_tensor_tikz(
   ]
 
   tikz_str = tikz(;
-    text=L"M_{%$(minus1(j))\rightarrow %$(j)}",
-    position=start_position + Point(0.0, -1.0),
-    shape=[lines; shape],
-    fill_color="red",
-    text_size=message_tensor_text_size,
+    vertex_position=start_position + Point(0.0, -1.0),
+    vertex=[L"M_{%$(minus1(j))\rightarrow %$(j)}"; shape; lines],
+    vertex_kwargs=(; fill_color="red", text_size=message_tensor_text_size),
   )
 
   g = path_graph(1)
@@ -148,24 +226,27 @@ function message_tensor_tikz(
   for v in vertices(g)
     add_edge!(gg, (v, 1) => (v, 2))
   end
+  vertex = function (v)
+    return [
+      iseven(v[2]) ? L"T_{%$(j)}" : L"T^*_{%$(j)}", shape, Vec(-1.0, 0.0), Vec(1.0, 0.0)
+    ]
+  end
   tikz_str *= tikz(
     gg;
-    position=v -> start_position + 2(Point(v) - Point(0.0, 2.0)),
-    text=v -> v[2] == 2 ? L"T_{%$(j)}" : L"T^*_{%$(j)}",
-    shape=[Vec(-1.0, 0.0), Vec(1.0, 0.0), shape],
-    fill_color="blue",
+    vertex_position=v -> start_position + 2(Point(v) - Point(0.0, 2.0)),
+    vertex,
+    vertex_kwargs=(; fill_color="blue"),
   )
 
-  tikz_str *= tikz(; text=L"=", position=start_position + Point(4.0, -1.0))
-  tikz_str *= tikz(; text=L"\lambda_{%$(j)}", position=start_position + Point(5.0, -1.0))
-
-  # TODO: Pass `shape` as the first argument!
+  tikz_str *= tikz(; vertex_position=start_position + Point(4.0, -1.0), vertex=L"=")
   tikz_str *= tikz(;
-    text=L"M_{%$(j)\rightarrow %$(plus1(j))}",
-    position=start_position + Point(6.0, -1.0),
-    shape=[lines; shape],
-    fill_color="red",
-    text_size=message_tensor_text_size,
+    vertex_position=start_position + Point(5.0, -1.0), vertex=L"\lambda_{%$(j)}"
+  )
+
+  tikz_str *= tikz(;
+    vertex=[L"M_{%$(j)\rightarrow %$(plus1(j))}"; shape; lines],
+    vertex_position=start_position + Point(6.0, -1.0),
+    vertex_kwargs=(; fill_color="red", text_size=message_tensor_text_size),
   )
   return tikz_str
 end
@@ -174,11 +255,7 @@ tikz_str = message_tensor_tikz(2; shape)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="BP message tensor update")
 
-tikz_str = message_tensor_tikz(
-  "j";
-  shape,
-  message_tensor_text_size="\\tiny",
-)
+tikz_str = message_tensor_tikz("j"; shape, message_tensor_text_size="\\tiny")
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="BP message tensor update")
 
