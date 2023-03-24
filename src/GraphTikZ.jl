@@ -153,6 +153,9 @@ module GraphTikZ
   function translate(s::Circle, translation)
     return Circle(s.center + translation, s.r)
   end
+  function translate(s::Polygon, translation::Point2)
+    return Polygon(coordinates(s) .+ translation)
+  end
 
   # GeometryBasics TikZ conversion
   # https://www.overleaf.com/learn/latex/TikZ_package
