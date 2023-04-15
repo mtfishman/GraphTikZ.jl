@@ -120,6 +120,9 @@ end
 function translate(s::Circle, translation::Point2)
   return Circle(s.center + translation, s.r)
 end
+function translate(s::Polygon, translation::Point2)
+  return Polygon(coordinates(s) .+ translation)
+end
 
 shape(s) = s
 shape(s::AbstractString) = meta(default_vertex_position(); text=s)
