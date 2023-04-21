@@ -177,6 +177,7 @@ function tikz(
   line_thickness=default_line_thickness(),
   line_color=default_line_color(),
   fill_color=default_fill_color(),
+  kwargs...,
 )
   filldraw_args = "[draw=$(line_color),$(line_thickness),fill=$(fill_color)!40]"
   tikz_str = L"\filldraw%$(filldraw_args) %$(string(Tuple(s.center))) %$(tikz_shape(s)) (%$(s.r)) node {};"
@@ -222,6 +223,7 @@ function tikz(
   line_thickness=default_line_thickness(),
   line_color=default_line_color(),
   fill_color=default_fill_color(),
+  kwargs...,
 )
   filldraw_args = "[draw=$(line_color),rounded corners,$(line_thickness),fill=$(fill_color)!40]"
   tikz_str = "\\filldraw$(filldraw_args) "
