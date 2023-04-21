@@ -24,6 +24,10 @@ tikz_str = tikz(; vertex=shape)
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Order 0 tensor")
 
+tikz_str = tikz(; vertex=shape, vertex_kwargs=(; line_thickness=4))
+tp = TikzPicture(tikz_str)
+push!(td, tp; caption="Order 0 tensor, thicker lines")
+
 tikz_str = tikz(; vertex=rotate(shape, π / 3))
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Order 0 tensor rotated")

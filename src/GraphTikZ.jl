@@ -40,7 +40,7 @@ default_line_color(v) = default_line_color()
 
 default_edge_shape(e) = Line
 
-default_line_thickness() = "ultra thick"
+default_line_thickness() = 2
 default_edge_points(e) = []
 
 default_corner_roundness() = 2
@@ -213,7 +213,7 @@ function tikz(
   line_color=default_line_color(),
   kwargs...,
 )
-  draw_args = "[draw=$(line_color),$(line_thickness)]"
+  draw_args = "[draw=$(line_color),line width=$(line_thickness)pt]"
   return L"\draw%$(draw_args) %$(string(Tuple(s[1]))) -- %$(string(Tuple((s[2]))));"
 end
 tikz(s::Line{1}; kwargs...) = tikz(line2(s); kwargs...)
@@ -228,7 +228,7 @@ function tikz(
   fill_color=default_fill_color(),
   kwargs...,
 )
-  filldraw_args = "[draw=$(line_color),$(line_thickness),fill=$(fill_color)!40]"
+  filldraw_args = "[draw=$(line_color),line width=$(line_thickness)pt,fill=$(fill_color)!40]"
   tikz_str = L"\filldraw%$(filldraw_args) %$(string(Tuple(s.center))) %$(tikz_shape(s)) (%$(s.r)) node {};"
   return tikz_str
 end
@@ -250,7 +250,7 @@ function tikz(
 )
   # Convert to Vector of length `length(coordinates(s))` if it is just a number
   corner_roundness = to_fill(corner_roundness, length(coordinates(s)))
-  draw_args = "[draw=$(line_color),$(line_thickness)]"
+  draw_args = "[draw=$(line_color),line width=$(line_thickness)pt]"
   tikz_str = "\\draw$(draw_args) $(string(Tuple(coordinates(s)[1]))) "
   for i in 2:(length(coordinates(s)) - 1)
     tikz_str *= "{[rounded corners=$(corner_roundness[i - 1])pt] -- $(string(Tuple(coordinates(s)[i])))} "
@@ -272,7 +272,7 @@ function tikz(
 )
   # Convert to Vector of length `length(coordinates(s))` if it is just a number
   corner_roundness = to_fill(corner_roundness, length(coordinates(s)))
-  filldraw_args = "[draw=$(line_color),$(line_thickness),fill=$(fill_color)!40]"
+  filldraw_args = "[draw=$(line_color),line width=$(line_thickness)pt,fill=$(fill_color)!40]"
   tikz_str = "\\filldraw$(filldraw_args) $(string(Tuple(coordinates(s)[1]))) "
   for i in 2:length(coordinates(s))
     tikz_str *= "{[rounded corners=$(corner_roundness[i])pt] -- $(string(Tuple(coordinates(s)[i])))} "
