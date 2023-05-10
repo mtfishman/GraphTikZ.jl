@@ -40,8 +40,13 @@ default_line_color(v) = default_line_color()
 
 default_edge_shape(e) = Line
 
-default_line_thickness() = "ultra thick"
+default_corner_roundness(s) = fill(2, length(coordinates(s)))
+
+default_line_thickness() = 1.6
 default_edge_points(e) = []
+
+default_line_style() = "solid"
+default_corner_radius() = 1
 
 # Return a dictionary
 to_dictionary(fmap::Function, x, indices) = to_dictionary(fmap, x, Indices(indices))
@@ -124,6 +129,8 @@ function translate(s::Polygon, translation::Point2)
   return Polygon(coordinates(s) .+ translation)
 end
 
+translate(s::PolygonMeta, translation::Point2) = meta(translate(metafree(s), translation); meta(s)...)
+
 shape(s) = s
 shape(s::AbstractString) = meta(default_vertex_position(); text=s)
 shape(s::LaTeXString) = meta(default_vertex_position(); text=s)
@@ -161,11 +168,11 @@ tikz(s::PointMeta; kwargs...) = tikz(metafree(s); kwargs..., meta(s)...)
 
 function tikz(
   s::Line{2};
-  line_thickness=default_line_thickness(),
+  line_line_thickness=default_line_thickness(),
   line_color=default_line_color(),
   kwargs...,
 )
-  draw_args = "[draw=$(line_color),$(line_thickness)]"
+  draw_args = "[draw=$(line_color),line width = $(line_line_thickness)pt]"
   return L"\draw%$(draw_args) %$(string(Tuple(s[1]))) -- %$(string(Tuple((s[2]))));"
 end
 
@@ -174,11 +181,13 @@ tikz(s::Line{1}; kwargs...) = tikz(line2(s); kwargs...)
 tikz_shape(::Circle) = "circle"
 function tikz(
   s::Circle;
-  line_thickness=default_line_thickness(),
+  shape_line_thickness=default_line_thickness(),
   line_color=default_line_color(),
+  text_size=default_text_size(),
   fill_color=default_fill_color(),
+  kwargs...
 )
-  filldraw_args = "[draw=$(line_color),$(line_thickness),fill=$(fill_color)!40]"
+  filldraw_args = "[draw=$(line_color),line width = $(shape_line_thickness)pt,fill=$(fill_color)!40]"
   tikz_str = L"\filldraw%$(filldraw_args) %$(string(Tuple(s.center))) %$(tikz_shape(s)) (%$(s.r)) node {};"
   return tikz_str
 end
@@ -186,12 +195,13 @@ end
 tikz_shape(::Rect2) = "rectangle"
 function tikz(
   s::Rect;
-  line_thickness=default_line_thickness(),
+  shape_line_thickness=default_line_thickness(),
   line_color=default_line_color(),
+  text_size=default_text_size(),
   fill_color=default_fill_color(),
   kwargs...,
 )
-  filldraw_args = "[draw=$(line_color),rounded corners,$(line_thickness),fill=$(fill_color)!40]"
+  filldraw_args = "[draw=$(line_color),rounded corners,line width = $(shape_line_thickness)pt,fill=$(fill_color)!40]"
   tikz_str = L"\filldraw%$(filldraw_args) %$(string(Tuple(s.origin))) %$(tikz_shape(s)) %$(string(Tuple(s.origin + s.widths))) node {};"
   return tikz_str
 end
@@ -201,12 +211,14 @@ end
 lines(s::LineString) = decompose(Line, s)
 function tikz(
   s::LineString;
-  line_thickness=default_line_thickness(),
+  line_line_thickness=default_line_thickness(),
   line_color=default_line_color(),
+  line_style = default_line_style(),
+  corner_radius = default_corner_radius(),
   rounded_corners=true,
   kwargs...,
 )
-  filldraw_args = "[draw=$(line_color),rounded corners,$(line_thickness)]"
+  filldraw_args = "[draw=$(line_color),rounded corners = $(corner_radius)pt, $(line_style), line width = $(line_line_thickness)pt]"
   tikz_str = "\\draw$(filldraw_args) "
   for p in coordinates(s)
     tikz_str *= "$(string(Tuple(p))) -- "
@@ -216,19 +228,31 @@ function tikz(
   return tikz_str
 end
 
-# Always makes a closed shape, use `LineString` to make connected lines.
+
 function tikz(
   s::Polygon;
-  line_thickness=default_line_thickness(),
+  shape_line_thickness=default_line_thickness(),
   line_color=default_line_color(),
   fill_color=default_fill_color(),
+  corner_roundness=default_corner_roundness(s), # Maybe defaults to `fill(2, length(coordinates(s))`
+  text_size=default_text_size(),
+  kwargs...
 )
-  filldraw_args = "[draw=$(line_color),rounded corners,$(line_thickness),fill=$(fill_color)!40]"
-  tikz_str = "\\filldraw$(filldraw_args) "
-  for p in coordinates(s)
-    tikz_str *= "$(string(Tuple(p))) -- "
+  filldraw_args = "[draw=$(line_color),line width = $(shape_line_thickness)pt,fill=$(fill_color)!40]"
+  tikz_str = "\\filldraw$(filldraw_args) $(string(Tuple(coordinates(s)[1])))"
+  for i in 2:(length(coordinates(s)))
+    tikz_str *= "{[rounded corners=$(corner_roundness[i-1])pt] -- $(string(Tuple(coordinates(s)[i])))}"
   end
-  tikz_str *= "cycle;"
+  tikz_str *= "{[rounded corners=$(corner_roundness[end])pt] -- cycle};"
   return tikz_str
 end
+
+function tikz(
+  s::PolygonMeta;
+  kwargs...,
+)
+  return tikz(metafree(s); kwargs..., meta(s)...)
 end
+
+end
+
