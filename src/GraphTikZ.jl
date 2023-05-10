@@ -217,7 +217,7 @@ tikz(s::PointMeta; kwargs...) = tikz(metafree(s); kwargs..., meta(s)...)
 
 function tikz(
   s::Line{2};
-  line_line_thickness=default_line_thickness(),
+  line_thickness=default_line_thickness(),
   line_color=default_line_color(),
   kwargs...,
 )
@@ -235,8 +235,9 @@ function tikz(
   line_color=default_line_color(),
   text_size=default_text_size(),
   fill_color=default_fill_color(),
+  kwargs...
 )
-  filldraw_args = "[draw=$(line_color),line width=$(line_thickness)pt,fill=$(fill_color)!40]"
+  filldraw_args = "[draw=$(line_color),line width=$(shape_line_thickness)pt,fill=$(fill_color)!40]"
   tikz_str = L"\filldraw%$(filldraw_args) %$(string(Tuple(s.center))) %$(tikz_shape(s)) (%$(s.r)) node {};"
   return tikz_str
 end
@@ -250,7 +251,7 @@ lines(s::LineString) = decompose(Line, s)
 # TODO: Consolidate with `tikz(::Polygon)`.
 function tikz(
   s::LineString;
-  line_line_thickness=default_line_thickness(),
+  line_thickness=default_line_thickness(),
   line_color=default_line_color(),
   fill_color=default_fill_color(),
   corner_roundness=default_corner_roundness(),
@@ -280,7 +281,7 @@ function tikz(
 )
   # Convert to Vector of length `length(coordinates(s))` if it is just a number
   corner_roundness = to_fill(corner_roundness, length(coordinates(s)))
-  filldraw_args = "[draw=$(line_color),line width=$(line_thickness)pt,fill=$(fill_color)!40]"
+  filldraw_args = "[draw=$(line_color),line width=$(shape_line_thickness)pt,fill=$(fill_color)!40]"
   tikz_str = "\\filldraw$(filldraw_args) $(string(Tuple(coordinates(s)[1]))) "
   for i in 2:length(coordinates(s))
     tikz_str *= "{[rounded corners=$(corner_roundness[i])pt] -- $(string(Tuple(coordinates(s)[i])))} "
