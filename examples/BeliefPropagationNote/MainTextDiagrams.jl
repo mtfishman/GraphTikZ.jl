@@ -4,13 +4,11 @@ using LaTeXStrings
 using NamedGraphs
 using TikzPictures
 using GraphTikZ
-using GraphTikZ: rotate
 
 using Random
 using DataGraphs
 using GeometryBasics
 using Graphs
-using GraphTikZ
 using LaTeXStrings
 using LinearAlgebra 
 using NamedGraphs
@@ -41,6 +39,22 @@ left_triangle = meta(p; corner_roundness = [2, 2, 14, 14])
 right_triangle = meta(p; corner_roundness = [14, 14, 2, 2])
 
 square = Polygon([Point2(-0.5, -0.5), Point2(-0.5, 0.5), Point2(0.5, 0.5), Point2(0.5, -0.5)])
+
+function generate_arc(s1::Point2, s2::Point2, r::Float64; npoints::Int64 = 100, C::Point2=zeros(Point2),
+    theta_shift::Float64 = 0.0)
+    a, b = C[1], C[2]
+    x1, x2 = s1[1], s2[1]
+    y1, y2 = s1[2], s2[2]
+
+    theta1 = acos( (x1 - b)/(sqrt((x1-a)^2 + (y1-b)^2)))
+    theta2 = acos( (x2 - b)/(sqrt((x2-a)^2 + (y2-b)^2)))
+
+    theta = theta1 < theta2 ? theta1 : theta2
+    theta += theta_shift
+    ps = [Point2(a + r*cos(theta + i*abs(theta1 - theta2)/npoints),  b + r*sin(theta + i*abs(theta1 - theta2)/npoints)) for i = 1:npoints]
+
+    return ps
+end
 
 #Some general Tensor Network states: MPS, PEPS, Tree, General TN
 function example_TNSs()
@@ -1142,19 +1156,19 @@ function infinite_TNS()
     save(PDF(save_root*"InfiniteTNS"), TikzPicture(tikz_str))
 end
 
-# example_TNSs()
-# isometry_condition()
-# norm_tensor()
-# belief_propagation_diagrams()
-# belief_propagation_MPS()
-# MPSBeliefPropagationidentity()
-# SVD_RootM_MPS()
-# UV_isometries()
-# Lambda_MPS()
-# Gamma_MPS()
-# vidal_gauge_isometries_MPS()
-# vidal_gauge_MPS()
-# SVD_RootM()
+example_TNSs()
+isometry_condition()
+norm_tensor()
+belief_propagation_diagrams()
+belief_propagation_MPS()
+MPSBeliefPropagationidentity()
+SVD_RootM_MPS()
+UV_isometries()
+Lambda_MPS()
+Gamma_MPS()
+vidal_gauge_isometries_MPS()
+vidal_gauge_MPS()
+SVD_RootM()
 Gamma()
 Lambda()
 vidal_gauge_TNS()

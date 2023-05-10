@@ -7,6 +7,7 @@ using LaTeXStrings
 using Statistics
 
 export tikz
+export rotate
 
 to_function(x::Function) = x
 to_function(x) = Returns(x)
@@ -42,9 +43,6 @@ default_edge_shape(e) = Line
 
 default_line_thickness() = 2
 default_edge_points(e) = []
-
-default_line_style() = "solid"
-default_corner_radius() = 1
 
 default_corner_roundness() = 2
 
@@ -171,12 +169,6 @@ end
 # function rotate(s::Vec, args...; kwargs...)
 #   return Vec(rotate(Point(s), args...; kwargs...))
 # end
-function rotate(s::Circle, args...; kwargs...)
-  return Circle(rotate(s.center, args...; kwargs...), s.r)
-end
-function translate(s::Polygon, translation::Point2)
-  return Polygon(coordinates(s) .+ translation)
-end
 
 translate(s::PolygonMeta, translation::Point2) = meta(translate(metafree(s), translation); meta(s)...)
 
