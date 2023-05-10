@@ -6,8 +6,7 @@ using InfiniteArrays
 using LaTeXStrings
 using Statistics
 
-export tikz
-export rotate
+export tikz, rotate
 
 to_function(x::Function) = x
 to_function(x) = Returns(x)
@@ -169,8 +168,9 @@ end
 # function rotate(s::Vec, args...; kwargs...)
 #   return Vec(rotate(Point(s), args...; kwargs...))
 # end
-
-translate(s::PolygonMeta, translation::Point2) = meta(translate(metafree(s), translation); meta(s)...)
+function rotate(s::Circle, args...; kwargs...)
+  return Circle(rotate(s.center, args...; kwargs...), s.r)
+end
 
 shape(s) = s
 shape(s::AbstractString) = meta(default_vertex_position(); text=s)
