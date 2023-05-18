@@ -37,6 +37,7 @@ default_shape(v) = default_shape()
 default_shapes(v) = Fill(default_shape())
 default_line_color() = "black"
 default_line_color(v) = default_line_color()
+default_line_style() = "solid"
 
 default_edge_shape(e) = Line
 
@@ -210,10 +211,11 @@ tikz(s::PointMeta; kwargs...) = tikz(metafree(s); kwargs..., meta(s)...)
 function tikz(
   s::Line{2};
   line_thickness=default_line_thickness(),
+  line_style=default_line_style(),
   line_color=default_line_color(),
   kwargs...,
 )
-  draw_args = "[draw=$(line_color),line width=$(line_thickness)pt]"
+  draw_args = "[draw=$(line_color), $(line_style), line width=$(line_thickness)pt]"
   return L"\draw%$(draw_args) %$(string(Tuple(s[1]))) -- %$(string(Tuple((s[2]))));"
 end
 tikz(s::Line{1}; kwargs...) = tikz(line2(s); kwargs...)
@@ -244,6 +246,7 @@ lines(s::LineString) = decompose(Line, s)
 function tikz(
   s::LineString;
   line_thickness=default_line_thickness(),
+  line_style=default_line_style(),
   line_color=default_line_color(),
   fill_color=default_fill_color(),
   corner_roundness=default_corner_roundness(),
@@ -251,7 +254,7 @@ function tikz(
 )
   # Convert to Vector of length `length(coordinates(s))` if it is just a number
   corner_roundness = to_fill(corner_roundness, length(coordinates(s)))
-  draw_args = "[draw=$(line_color),line width=$(line_thickness)pt]"
+  draw_args = "[draw=$(line_color), $(line_style), line width=$(line_thickness)pt]"
   tikz_str = "\\draw$(draw_args) $(string(Tuple(coordinates(s)[1]))) "
   for i in 2:(length(coordinates(s)) - 1)
     tikz_str *= "{[rounded corners=$(corner_roundness[i - 1])pt] -- $(string(Tuple(coordinates(s)[i])))} "

@@ -35,8 +35,8 @@ vert_dist = 1.4
 
 polygon_dist = 0.45
 p = Polygon([Point2(-polygon_dist, -polygon_dist), Point2(polygon_dist, -polygon_dist), Point2(polygon_dist, polygon_dist), Point2(-polygon_dist, polygon_dist)])
-left_triangle = meta(p; corner_roundness = [2, 2, 14, 14])
-right_triangle = meta(p; corner_roundness = [14, 14, 2, 2])
+left_triangle = meta(p; corner_roundness = [2, 14, 14, 2])
+right_triangle = meta(p; corner_roundness = [14, 2, 2, 14])
 
 square = Polygon([Point2(-0.5, -0.5), Point2(-0.5, 0.5), Point2(0.5, 0.5), Point2(0.5, -0.5)])
 
@@ -136,9 +136,9 @@ function isometry_condition()
     vertex = v-> iseven(v[2]) ? [L"\Gamma_{v}", circ, sqrt(2)*rvec] : [L"\Gamma^{*}_{v}", circ, sqrt(2)*rvec],
     vertex_kwargs = (; fill_color = "blue"))
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (2.75, 0.0) arc [start angle = 0, end angle = 150, x radius = 0.825cm, y radius = 0.825cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (2.75, 0.0) arc [start angle = 0, end angle = 150, x radius = 0.825cm, y radius = 0.825cm];"
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (2.75, -2) arc [start angle = 0, end angle = -150, x radius = 0.825cm, y radius = 0.825cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (2.75, -2) arc [start angle = 0, end angle = -150, x radius = 0.825cm, y radius = 0.825cm];"
 
     tikz_str *= tikz(;vertex_position=cur_position + Point(2.0, 0.0) + Point(-1.5, 0.4),
     vertex=[L"\Lambda_{v_{1},v}", s_circ], vertex_kwargs = (; text_size = bt_label_size, fill_color = "black"))
@@ -147,10 +147,10 @@ function isometry_condition()
     vertex=[L"\Lambda_{v_{1},v}", s_circ], vertex_kwargs = (; text_size = bt_label_size, fill_color = "black"))
 
     tikz_str *= tikz(;vertex_position=cur_position + Point(2.0, 0.0) + Point(-1.8, -0.35),
-    vertex=[L"\Lambda_{v_{N},v}", s_circ], vertex_kwargs = (; text_size = bt_label_size, fill_color = "black"))
+    vertex=[L"\Lambda_{v_{3},v}", s_circ], vertex_kwargs = (; text_size = bt_label_size, fill_color = "black"))
 
     tikz_str *= tikz(;vertex_position=cur_position + Point(2.0, -2.0) + Point(-1.8, -0.35),
-    vertex=[L"\Lambda_{v_{N},v}", s_circ], vertex_kwargs = (; text_size = bt_label_size, fill_color = "black"))
+    vertex=[L"\Lambda_{v_{3},v}", s_circ], vertex_kwargs = (; text_size = bt_label_size, fill_color = "black"))
 
     tikz_str *= tikz(; vertex = [L"="], vertex_position=cur_position + Point(4.0, -1.0), vertex_kwargs = (; text_size = "\\Large"))
 
@@ -173,17 +173,17 @@ function norm_tensor()
         ; vertex_position = v-> cur_position + 1.2*Point(v), vertex =  v-> iseven(v[2]) ? [L"T_{v}", circ, lvec, rvec, (1/sqrt(2))*Vec(-1.0, 1.0), (1/sqrt(2))*Vec(1.0, -1.0)] : [L"T^{*}_{v}", circ, lvec, rvec, (1/sqrt(2))*Vec(-1.0, 1.0), (1/sqrt(2))*Vec(1.0, -1.0)] ,
         vertex_kwargs = (; fill_color = "blue"))
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (2.0, 2.4) arc [start angle = 0, end angle = 125, x radius = 0.75cm, y radius = 0.75cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (2.0, 2.4) arc [start angle = 0, end angle = 125, x radius = 0.75cm, y radius = 0.75cm];"
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (1.7, 0.7) arc [start angle = -45, end angle = -180, x radius = 0.75cm, y radius = 0.75cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (1.7, 0.7) arc [start angle = -45, end angle = -180, x radius = 0.75cm, y radius = 0.75cm];"
 
     tikz_str *= tikz(; vertex=[L"="], vertex_position=cur_position + Point(3.0, 1.75), vertex_kwargs = (; text_size = "\\Large"))
 
     cur_position += Point(3.5, 0.8)
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (5.3, 1.8) arc [start angle = 0, end angle = 125, x radius = 0.75cm, y radius = 0.75cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (5.3, 1.8) arc [start angle = 0, end angle = 125, x radius = 0.75cm, y radius = 0.75cm];"
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (5.0, 1.2) arc [start angle = -45, end angle = -180, x radius = 0.75cm, y radius = 0.75cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (5.0, 1.2) arc [start angle = -45, end angle = -180, x radius = 0.75cm, y radius = 0.75cm];"
 
     g = named_grid((1,1))
     tikz_str *= tikz(g
@@ -203,32 +203,32 @@ function belief_propagation_diagrams()
     ; vertex_position = cur_position, vertex = v-> [L"\mathcal{T}_{v}", circ, 1.75*rvec, sqrt(2)*lvec, lvec + uvec, rvec + Point2(0.0, 0.75), rvec + Point2(0.0, -0.75)],
     vertex_kwargs = (; fill_color = "blue", line_thickness = 3.2))
 
-    tikz_str *= tikz(; vertex_position = cur_position + Point(-1.5, 0.0), vertex = [L"M_{v_{N}, v}", circ],
+    tikz_str *= tikz(; vertex_position = cur_position + Point(-1.5, 0.0), vertex = [L"M_{v_{5}, v}", circ],
     vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
 
     tikz_str *= tikz(;  vertex_position = cur_position + Point(-1.3, 1.3), vertex = [L"M_{v_{1}, v}", circ],
     vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
 
     tikz_str *= tikz(; vertex_position = cur_position + sqrt(2)*Point(1.0, 0.75),
-    vertex = [L"M_{v_{i-1}, v}", circ], vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
+    vertex = [L"M_{v_{2}, v}", circ], vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
 
     tikz_str *= tikz(; vertex_position = cur_position + sqrt(2)*Point(1.0, -0.75),
-    vertex = [L"M_{v_{i+1}, v}", circ], vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
+    vertex = [L"M_{v_{4}, v}", circ], vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
 
     points = generate_arc(Point2(-1, 0.5), Point2(0.3, -0.4), 0.8; theta_shift = 2.5, npoints = 5)
     lines = [
       LineString(points),
     ]
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (0.6, -0.6) arc [start angle = -45, end angle = -170, x radius = 0.825cm, y radius = 0.825cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (0.6, -0.6) arc [start angle = -45, end angle = -170, x radius = 0.825cm, y radius = 0.825cm];"
 
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (0.6, 0.6) arc [start angle = 45, end angle = 130, x radius = 0.9cm, y radius = 0.9cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (0.6, 0.6) arc [start angle = 45, end angle = 130, x radius = 0.9cm, y radius = 0.9cm];"
 
     tikz_str *= tikz(; vertex=[L"="], vertex_position=cur_position + Point(2.25, 0.0), vertex_kwargs = (; text_size = "\\Large"))
 
     tikz_str *= tikz(;
-    vertex_position = cur_position + Point(3.5, 0.0), vertex = [L"M_{v, v_{i}}", circ, 1.75*rvec],
+    vertex_position = cur_position + Point(3.5, 0.0), vertex = [L"M_{v, v_{3}}", circ, 1.75*rvec],
     vertex_kwargs = (; fill_color = "black", text_size = mt_label_size, line_thickness = 3.2))
 
     save(PDF(save_root*"MessageTensorUpdate"), TikzPicture(tikz_str))
@@ -634,14 +634,14 @@ function Gamma()
     vertex_position= cur_position, vertex = [L"\Gamma_{v}", circ,  dvec, rvec, lvec, Vec(-1/sqrt(2), 1/sqrt(2)) ], vertex_kwargs = (; fill_color = "blue" ))
 
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (0.65, 0.0) arc [start angle = 0, end angle = 135, x radius = 0.7cm, y radius = 0.7cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (0.65, 0.0) arc [start angle = 0, end angle = 135, x radius = 0.7cm, y radius = 0.7cm];"
 
     tikz_str *= tikz(; vertex = [L"="], vertex_position=cur_position + Point(2.5, 0.0), vertex_kwargs = (; text_size = "\\Large"))
 
     graph = named_grid((5,1))
     cur_position = cur_position + Point(3.5, 0.0)
 
-    vertex_dict = Dict([((1,1), [L"V_{v_{1}, v}", left_triangle, lvec]), ((2,1), [L"M^{\frac{1}{2}}_{v, v_{1}}", circ]), ((3,1), [L"T_{v}", circ, dvec, Vec(-2.5,2.5)]), ((4,1),[L"M^{-\frac{1}{2}}_{v, v_{N}}", circ]), ((5,1), [L"U_{v, v_{N}}", right_triangle, rvec])])
+    vertex_dict = Dict([((1,1), [L"V_{v_{1}, v}", left_triangle, lvec]), ((2,1), [L"M^{\frac{1}{2}}_{v, v_{1}}", circ]), ((3,1), [L"T_{v}", circ, dvec, Vec(-2.5,2.5)]), ((4,1),[L"M^{-\frac{1}{2}}_{v, v_{3}}", circ]), ((5,1), [L"U_{v, v_{3}}", right_triangle, rvec])])
     tikz_str *= tikz(graph; vertex_position= v-> cur_position + 1.4*(Point(v) - Point(0.0, 1.0)), vertex = v -> vertex_dict[v], 
     vertex_kwargs = v -> v[1] == 1 || v[1] == 5 ? (; fill_color = "orange", text_size = mt_label_size) : v[1] == 3 ? (; fill_color = "blue") : (; fill_color = "black", text_size = mt_label_size))
 
@@ -649,7 +649,7 @@ function Gamma()
 
     tikz_str *= tikz(; vertex_position = cur_position + Point(4.2, 0.0) + Point(-1.1, 1.1), vertex = [L"M^{-\frac{1}{2}}_{v,v_{2}}", circ], vertex_kwargs = (;fill_color = "black", text_size = mt_label_size))
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (9.1, 0.5) arc [start angle = 0, end angle = 140, x radius = 1.2cm, y radius = 1.2cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (9.1, 0.5) arc [start angle = 0, end angle = 140, x radius = 0.7cm, y radius = 0.7cm];"
 
     tikz_str *= tikz(; vertex_position = cur_position + Point(4.2, 0.0) + Point(-2, 2), vertex =[L"V_{v,v_{2}}", rotated_triangle], vertex_kwargs = (; fill_color = "orange", text_size =mt_label_size))
     
@@ -997,35 +997,35 @@ function symmetric_tensor()
     cur_position = zeros(Point2)
     #Part 1
     tikz_str = tikz(
-    ; vertex_position = cur_position, vertex = v-> [L"\Gamma_{v}", circ, dvec, 1.5*rvec, 2*lvec, 1.5*(lvec + uvec), 2*(rvec + Point2(0.0, 0.75)), 2*(rvec + Point2(0.0, -0.75))],
+    ; vertex_position = cur_position, vertex = v-> [L"\Gamma_{v}", circ, dvec, 2*lvec, 1.5*(lvec + uvec), 2*(rvec + Point2(0.0, 0.75)), 2*(rvec + Point2(0.0, -0.75))],
     vertex_kwargs = (; fill_color = "blue", line_thickness = 3.2))
 
-    tikz_str *= tikz(; vertex_position = cur_position + 0.8*Point(-1.5, 0.0), vertex = [L"\Lambda^{1/2}_{v_{N}, v}", circ],
+    tikz_str *= tikz(; vertex_position = cur_position + 0.8*Point(-1.5, 0.0), vertex = [L"\Lambda^{1/2}_{v_{4}, v}", circ],
     vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
 
     tikz_str *= tikz(;  vertex_position = cur_position + 0.8*Point(-1.3, 1.3), vertex = [L"\Lambda^{1/2}_{v_{1}, v}", circ],
     vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
 
     tikz_str *= tikz(; vertex_position = cur_position + 0.8*sqrt(2)*Point(1.0, 0.75),
-    vertex = [L"\Lambda^{1/2}_{v_{i-1}, v}", circ], vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
+    vertex = [L"\Lambda^{1/2}_{v_{2}, v}", circ], vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
 
     tikz_str *= tikz(; vertex_position = cur_position + 0.8*sqrt(2)*Point(1.0, -0.75),
-    vertex = [L"\Lambda^{1/2}_{v_{i+1}, v}", circ], vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
+    vertex = [L"\Lambda^{1/2}_{v_{3}, v}", circ], vertex_kwargs = (; fill_color = "black", text_size = mt_label_size))
 
     points = generate_arc(Point2(-1, 0.5), Point2(0.3, -0.4), 0.8; theta_shift = 2.5, npoints = 5)
     lines = [
       LineString(points),
     ]
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (0.6, -0.6) arc [start angle = -45, end angle = -170, x radius = 0.825cm, y radius = 0.825cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (0.6, -0.6) arc [start angle = -45, end angle = -170, x radius = 0.825cm, y radius = 0.825cm];"
 
 
-    tikz_str *= "\\draw [dotted, line width = 1pt] (0.6, 0.6) arc [start angle = 45, end angle = 130, x radius = 0.9cm, y radius = 0.9cm];"
+    #tikz_str *= "\\draw [dotted, line width = 1pt] (0.6, 0.6) arc [start angle = 45, end angle = 130, x radius = 0.9cm, y radius = 0.9cm];"
 
     tikz_str *= tikz(; vertex=[L"="], vertex_position=cur_position + Point(2.75, 0.0), vertex_kwargs = (; text_size = "\\Large"))
 
     tikz_str *= tikz(;
-    vertex_position = cur_position + Point(5.0, 0.0), vertex = [L"S_{v}", circ, dvec, rvec, lvec, (lvec + uvec), (rvec + Point2(0.0, 0.75)), (rvec + Point2(0.0, -0.75))],
+    vertex_position = cur_position + Point(5.0, 0.0), vertex = [L"S_{v}", circ, dvec, lvec, (lvec + uvec), (rvec + Point2(0.0, 0.75)), (rvec + Point2(0.0, -0.75))],
     vertex_kwargs = (; fill_color = "blue", line_thickness = 3.2))
 
     save(PDF(save_root*"SymmetricTensor"), TikzPicture(tikz_str))
@@ -1156,27 +1156,27 @@ function infinite_TNS()
     save(PDF(save_root*"InfiniteTNS"), TikzPicture(tikz_str))
 end
 
-example_TNSs()
-isometry_condition()
-norm_tensor()
-belief_propagation_diagrams()
-belief_propagation_MPS()
-MPSBeliefPropagationidentity()
-SVD_RootM_MPS()
-UV_isometries()
-Lambda_MPS()
-Gamma_MPS()
-vidal_gauge_isometries_MPS()
-vidal_gauge_MPS()
-SVD_RootM()
-Gamma()
-Lambda()
-vidal_gauge_TNS()
-ApproximateIsometryTNS()
-canonicalness()
-approx_Sz()
+# example_TNSs()
+# isometry_condition()
+# norm_tensor()
+# belief_propagation_diagrams()
+# belief_propagation_MPS()
+# MPSBeliefPropagationidentity()
+# SVD_RootM_MPS()
+# UV_isometries()
+# Lambda_MPS()
+# Gamma_MPS()
+# vidal_gauge_isometries_MPS()
+# vidal_gauge_MPS()
+# SVD_RootM()
+# Gamma()
+# Lambda()
+# vidal_gauge_TNS()
+# ApproximateIsometryTNS()
+# canonicalness()
+# approx_Sz()
 PEPO_Contraction()
-root_bond_tensors()
-symmetric_tensor()
-symmetric_tensor_network_state()
+# root_bond_tensors()
+# symmetric_tensor()
+# symmetric_tensor_network_state()
 infinite_TNS()
