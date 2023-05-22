@@ -229,7 +229,7 @@ function tikz(
   line_color=default_line_color(),
   text_size=default_text_size(),
   fill_color=default_fill_color(),
-  kwargs...
+  kwargs...,
 )
   filldraw_args = "[draw=$(line_color),line width=$(shape_line_thickness)pt,fill=$(fill_color)!40]"
   tikz_str = L"\filldraw%$(filldraw_args) %$(string(Tuple(s.center))) %$(tikz_shape(s)) (%$(s.r)) node {};"
@@ -286,14 +286,10 @@ function tikz(
 end
 tikz(s::PolygonMeta; kwargs...) = tikz(metafree(s); kwargs..., meta(s)...)
 
-function tikz(
-  s::Rect;
-  kwargs...,
-)
+function tikz(s::Rect; kwargs...)
   return tikz(to_polygon(s); kwargs...)
 end
 # GeometryBasics.jl doesn't have this defined right now.
 # tikz(s::RectMeta; kwargs...) = tikz(metafree(s); kwargs..., meta(s)...)
 
 end
-
