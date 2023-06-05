@@ -226,9 +226,8 @@ tikz_shape(::Circle) = "circle"
 function tikz(
   s::Circle;
   line_thickness=default_line_thickness(),
-  line_style = default_line_style(),
+  line_style=default_line_style(),
   line_color=default_line_color(),
-  text_size=default_text_size(),
   fill_color=default_fill_color(),
   kwargs...,
 )
@@ -270,7 +269,7 @@ tikz(s::LineStringMeta; kwargs...) = tikz(metafree(s); kwargs..., meta(s)...)
 function tikz(
   s::Polygon;
   line_thickness=default_line_thickness(),
-  line_style = default_line_style(),
+  line_style=default_line_style(),
   line_color=default_line_color(),
   fill_color=default_fill_color(),
   corner_roundness=default_corner_roundness(),
