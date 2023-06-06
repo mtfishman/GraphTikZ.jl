@@ -16,7 +16,9 @@ path_g = path_graph(n)
 g = random_regular_graph(n, 3)
 
 shape = Rect(Vec(-0.5, -0.5), Vec(1.0, 1.0))
-shape_alt = Polygon([Point2(-0.5, -0.5), Point2(-0.5, 0.5), Point2(0.5, 0.5), Point2(0.5, -0.5)])
+shape_alt = Polygon([
+  Point2(-0.5, -0.5), Point2(-0.5, 0.5), Point2(0.5, 0.5), Point2(0.5, -0.5)
+])
 
 td = TikzDocument()
 
@@ -36,36 +38,26 @@ tikz_str = tikz(; vertex=rotate(shape, π / 8; center=Point(-10.0, -10.0)))
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Order 0 tensor rotated about a center")
 
-tikz_str = tikz(;
-  vertex=shape_alt,
-  vertex_kwargs=(; corner_roundness=10),
-)
+tikz_str = tikz(; vertex=shape_alt, vertex_kwargs=(; corner_roundness=10))
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Order 0 tensor custom corner rounding")
 
-tikz_str = tikz(;
-  vertex=shape_alt,
-  vertex_kwargs=(; corner_roundness=[2, 5, 8, 15]),
-)
+tikz_str = tikz(; vertex=shape_alt, vertex_kwargs=(; corner_roundness=[2, 5, 8, 15]))
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Order 0 tensor corner-specific rounding")
 
-tikz_str = tikz(;
-  vertex=shape_alt,
-  vertex_kwargs=(; corner_roundness=[2, 14, 14, 2]),
-)
+tikz_str = tikz(; vertex=shape_alt, vertex_kwargs=(; corner_roundness=[2, 14, 14, 2]))
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Order 0 tensor semistadium")
 
 tikz_str = tikz(;
-  vertex=rotate(shape_alt, π / 4),
-  vertex_kwargs=(; corner_roundness=[2, 14, 14, 2]),
+  vertex=rotate(shape_alt, π / 4), vertex_kwargs=(; corner_roundness=[2, 14, 14, 2])
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Order 0 tensor semistadium rotated")
 
 tikz_str = tikz(;
-  vertex=LineString([Point(0.0, 0.0), Point(1.0, 1.0), Point(2.0, 0.0), Point(1.0, -1.0)]),
+  vertex=LineString([Point(0.0, 0.0), Point(1.0, 1.0), Point(2.0, 0.0), Point(1.0, -1.0)])
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Lines")
@@ -84,16 +76,17 @@ tikz_str = tikz(;
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Lines with custom corner roundness")
 
-tikz_str = tikz(Graph(2);
-  vertex=[shape_alt, shape_alt],
-  vertex_kwargs=(; corner_roundness=[2, 14, 14, 2]),
+tikz_str = tikz(
+  Graph(2); vertex=[shape_alt, shape_alt], vertex_kwargs=(; corner_roundness=[2, 14, 14, 2])
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Two order 0 tensors")
 
-tikz_str = tikz(Graph(2);
+tikz_str = tikz(
+  Graph(2);
   vertex=v -> [shape_alt, shape_alt][v],
-  vertex_kwargs=v -> [(; corner_roundness=[2, 14, 14, 2]), (; corner_roundness=[2, 14, 2, 14])][v],
+  vertex_kwargs=v ->
+    [(; corner_roundness=[2, 14, 14, 2]), (; corner_roundness=[2, 14, 2, 14])][v],
 )
 tp = TikzPicture(tikz_str)
 push!(td, tp; caption="Two order 0 tensors, specify different options")
@@ -101,7 +94,11 @@ push!(td, tp; caption="Two order 0 tensors, specify different options")
 tikz_str = tikz(;
   vertex=[
     meta(shape_alt; corner_roundness=[2, 14, 14, 2], fill_color="blue"),
-    meta(translate(shape_alt, Point(2.0, 0.0)); corner_roundness=[2, 14, 2, 14], fill_color="orange"),
+    meta(
+      translate(shape_alt, Point(2.0, 0.0));
+      corner_roundness=[2, 14, 2, 14],
+      fill_color="orange",
+    ),
   ],
 )
 tp = TikzPicture(tikz_str)

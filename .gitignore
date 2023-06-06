@@ -11,3 +11,5 @@
 Manifest.toml
 benchmark/*.json
 docs/build/
+test/01_pepo.pdf
+test/02_belief_propagation.pdf

@@ -282,10 +282,7 @@ function tikz(
 end
 tikz(s::PolygonMeta; kwargs...) = tikz(metafree(s); kwargs..., meta(s)...)
 
-function tikz(
-  s::Rect;
-  kwargs...,
-)
+function tikz(s::Rect; kwargs...)
   return tikz(to_polygon(s); kwargs...)
 end
 # GeometryBasics.jl doesn't have this defined right now.
